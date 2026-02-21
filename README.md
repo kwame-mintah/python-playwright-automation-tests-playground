@@ -44,7 +44,7 @@ HTML file containing the results for each test.
 
 ### Example recorded video test
 
-![Video](https://github.com/kwame-mintah/python-playwright-automation-tests-playground/blob/main/videos/example_playwright_video_stream_injection_run_converted_to_mp4_for_readme.mp4)
+![Video](videos/example_playwright_video_stream_injection_run.gif)
 
 ## Credits
 
