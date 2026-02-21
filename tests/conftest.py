@@ -3,7 +3,11 @@ import pathlib
 from datetime import datetime
 
 import pytest
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, ViewportSize
+
+video_path = pathlib.Path(
+    "../data/video/pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.y4m"
+).resolve()
 
 
 def pytest_configure(config: pytest.Config) -> None:
@@ -33,13 +37,12 @@ def launch_web_browser():
     """
     with sync_playwright() as p:
         browser = p.chromium.launch(
-            executable_path="/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
             headless=False,
             slow_mo=1000,
             args=[
                 "--use-fake-device-for-media-stream",
                 "--use-fake-ui-for-media-stream",
-                f"--use-file-for-fake-video-capture={pathlib.Path('data/video/pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.mp4')}",
+                f"--use-file-for-fake-video-capture={video_path}",
             ],
         )
         yield browser
@@ -48,7 +51,12 @@ def launch_web_browser():
 
 @pytest.fixture(scope="function")
 def web_page(launch_web_browser):
-    context = launch_web_browser.new_context(permissions=["camera", "microphone"])
+    assert video_path.exists()
+    context = launch_web_browser.new_context(
+        permissions=["camera", "microphone"],
+        record_video_dir="../videos/",
+        record_video_size=ViewportSize(width=640, height=480),
+    )
     page = context.new_page()
     yield page
     context.close()

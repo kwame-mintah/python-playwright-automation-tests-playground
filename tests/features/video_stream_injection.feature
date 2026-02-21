@@ -6,4 +6,4 @@ Feature: Use fake device for media stream
     Then I should be able to view the stream on the page
     Examples:
       | url                   |
-      | http://localhost:3000 |
+      | http://localhost:8080/ |
