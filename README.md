@@ -32,10 +32,14 @@ playwright install
 pytest
 ```
 
-[!NOTE]
+> [!NOTE]
 > If you want to use a different mock video for the [video_stream_injection](tests/features/video_stream_injection.feature) tests
 > you will need to convert the video to `.y4m`, which is the raw uncompressed format, note that size on disk can be quite big, use a
-> lower resolution e.g. `ffmpeg -i pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.mp4 -vf scale=640:480 -r 10 -t 3 -pix_fmt yuv420p pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.y4m`
+> lower resolution e.g:
+
+```
+ffmpeg -i pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.mp4 -vf scale=640:480 -r 10 -t 3 -pix_fmt yuv420p pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.y4m
+```
 
 ## Test outputs
 
