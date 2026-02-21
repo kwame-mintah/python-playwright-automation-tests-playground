@@ -10,6 +10,7 @@ This project aims to have a running demonstration of the tool to run a _simple_ 
 
 1. [Docker for desktop](https://docs.docker.com/desktop/)
 2. [uv](https://docs.astral.sh/uv/#installation)
+3. [ffmpeg](https://ffmpeg.org/)
 
 ### Usage via `uv`
 
@@ -19,12 +20,23 @@ This project aims to have a running demonstration of the tool to run a _simple_ 
 uv sync
 ```
 
-1. Run the tests defined within this project
+2. Install Playwright browsers
+
+```shell
+playwright install
+```
+
+3. Run the tests defined within this project
 
 ```pycon
 pytest
 ```
 
+[!NOTE]
+> If you want to use a different mock video for the [video_stream_injection](tests/features/video_stream_injection.feature) tests
+> you will need to convert the video to `.y4m`, which is the raw uncompressed format, note that size on disk can be quite big, use a
+> lower resolution e.g. `ffmpeg -i pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.mp4 -vf scale=640:480 -r 10 -t 3 -pix_fmt yuv420p pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.y4m`
+
 ## Credits
 
-[Video by Arijit Dey](data/video/pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.mp4): https://www.pexels.com/video/adorable-puppy-resting-in-a-sunlit-forest-36014853/
+[Video by Arijit Dey](data/video/pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.y4m): https://www.pexels.com/video/adorable-puppy-resting-in-a-sunlit-forest-36014853/
