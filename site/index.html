@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Webcam + MediaPipe Image Classification</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  text-align: center;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 400px;
+}
+
+video {
+  width: 100%;
+  border-radius: 8px;
+  background: black;
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#response {
+  margin-top: 15px;
+  padding: 10px;
+  background: #f1f1f1;
+  border-radius: 5px;
+  min-height: 40px;
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+canvas {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <video id="webcam" autoplay playsinline></video>
+  <canvas id="snapshot"></canvas>
+  <button id="apiButton">Capture & Predict</button>
+  <div id="response"></div>
+</div>
+
+<!-- TensorFlow.js -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
+<!-- Pretrained MobileNet Model -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+
+<script>
+const video = document.getElementById("webcam");
+const canvas = document.getElementById("snapshot");
+const button = document.getElementById("apiButton");
+const responseDiv = document.getElementById("response");
+
+let model;
+
+// Start webcam
+async function startWebcam() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+  } catch (error) {
+    responseDiv.textContent = "Webcam access denied or not available.";
+    console.error(error);
+  }
+}
+
+// Load ML model
+async function loadModel() {
+  responseDiv.textContent = "Loading AI model...";
+  button.disabled = true;
+  button.textContent = "Loading model...";
+
+  model = await mobilenet.load();
+
+  responseDiv.textContent = "Model loaded. Ready!";
+  button.disabled = false;
+  button.textContent = "Capture & Predict";
+}
+
+// Capture image
+function captureFrame() {
+  const context = canvas.getContext("2d");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  context.drawImage(video, 0, 0);
+  return canvas;
+}
+
+// Predict image content
+async function predictImage() {
+  responseDiv.textContent = "Capturing image...";
+  const image = captureFrame();
+
+  responseDiv.textContent = "Analyzing image...";
+  const predictions = await model.classify(image);
+
+  responseDiv.textContent =
+    predictions
+      .map(p => `${p.className} (${(p.probability * 100).toFixed(2)}%)`)
+      .join("\n");
+}
+
+button.addEventListener("click", predictImage);
+
+startWebcam();
+loadModel();
+</script>
+
+</body>
+</html>
