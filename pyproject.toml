@@ -1,0 +1,16 @@
+[project]
+name = "python-playwright-automation-tests-playground"
+version = "0.1.0"
+description = "🛝 ˈplā-ˌgrau̇nd an area known or suited for activity of a specified sort."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "playwright<=1.58.0",
+    "pytest-bdd<=8.1.0",
+    "pytest-html<=4.2.0",
+    "pytest-playwright<=0.7.2",
+    "pytest<=9.0.2",
+]
+
+[tool.pytest.ini_options]
+addopts = ""
