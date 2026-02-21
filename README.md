@@ -43,7 +43,7 @@ When running Playwright, this project has been configured to [capture a video re
 HTML file containing the results for each test.
 
 ### Example recorded video test
-![](videos/example_playwright_video_stream_injection_run.webm)
+![](videos/example_playwright_video_stream_injection_run_converted_to_mp4_for_readme.mp4)
 
 ## Credits
 
