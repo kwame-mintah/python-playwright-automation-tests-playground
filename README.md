@@ -37,6 +37,14 @@ pytest
 > you will need to convert the video to `.y4m`, which is the raw uncompressed format, note that size on disk can be quite big, use a
 > lower resolution e.g. `ffmpeg -i pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.mp4 -vf scale=640:480 -r 10 -t 3 -pix_fmt yuv420p pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.y4m`
 
+## Test outputs
+
+When running Playwright, this project has been configured to [capture a video recording](https://playwright.dev/python/docs/videos#record-video) of the test run, as well as generating a
+HTML file containing the results for each test.
+
+### Example recorded video test
+![](videos/example_playwright_video_stream_injection_run.webm)
+
 ## Credits
 
 [Video by Arijit Dey](data/video/pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.y4m): https://www.pexels.com/video/adorable-puppy-resting-in-a-sunlit-forest-36014853/
