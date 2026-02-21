@@ -24,3 +24,7 @@ uv sync
 ```pycon
 pytest
 ```
+
+## Credits
+
+[Video by Arijit Dey](data/video/pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.mp4): https://www.pexels.com/video/adorable-puppy-resting-in-a-sunlit-forest-36014853/
