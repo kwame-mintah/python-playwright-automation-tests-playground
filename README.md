@@ -1,6 +1,6 @@
 # Python Playwright Automation Tests Playground
 
-![python](https://img.shields.io/badge/python-3.14.0-informational)
+![python](https://img.shields.io/badge/python-3.12.0-informational)
 
 As the name of the repository suggests, it's just a [_playground_](https://dictionary.cambridge.org/dictionary/english/playground).
 A place to better understand using [playwright](https://playwright.dev/), that enables reliable end-to-end testing for modern web apps.
@@ -26,7 +26,13 @@ uv sync
 playwright install
 ```
 
-3. Run the tests defined within this project
+3. Start the demo websites used for test(s) via [`docker compose`](site/docker-compose.yaml)
+
+```shell
+docker compose up --build -d
+```
+
+4. Run the tests defined within this project
 
 ```pycon
 pytest
@@ -35,9 +41,9 @@ pytest
 > [!NOTE]
 > If you want to use a different mock video for the [video_stream_injection](tests/features/video_stream_injection.feature) tests
 > you will need to convert the video to `.y4m`, which is the raw uncompressed format, note that size on disk can be quite big, use a
-> lower resolution e.g:
+> lower resolution and frame per second (FPS).
 
-```
+```shell
 ffmpeg -i pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.mp4 -vf scale=640:480 -r 10 -t 3 -pix_fmt yuv420p pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.y4m
 ```
 
@@ -49,6 +55,10 @@ HTML file containing the results for each test.
 ### Example recorded video test
 
 ![Video](videos/example_playwright_video_stream_injection_run.gif)
+
+### Example HTML report
+
+![Image](reports/example_screenshot_report_2026-02-21_22-03-07.png)
 
 ## Credits
 
