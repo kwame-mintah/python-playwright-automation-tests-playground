@@ -16,6 +16,13 @@ def pytest_configure(config: pytest.Config) -> None:
     """
     Create a `/reports/` directory and timestamp reports generated.
     """
+    # Force verbosity (-vv)
+    config.option.verbose = 2
+
+    # Enable gherkin terminal reporter
+    # pytest -vv --gherkin-terminal-reporter
+    config.option.gherkin_terminal_reporter = True
+
     # Create reports directory
     os.makedirs("../reports", exist_ok=True)
 
