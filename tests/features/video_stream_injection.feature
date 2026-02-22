@@ -1,9 +1,9 @@
 Feature: Use fake device for media stream
 
   Scenario Outline: Webcam video stream is injected with mock
-    Given I am a user on <url>
-    And I grant permission for the site to access my webcam
-    Then I should be able to view the stream on the page
+    Given I am a user on site <url>
+    And I am able to request an image for prediction
+    Then I should be able to see the prediction result
     Examples:
       | url                   |
       | http://localhost:8080/ |

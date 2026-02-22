@@ -10,24 +10,26 @@ def test_webcam_video_stream_is_injected_with_mock():
     """Webcam video stream is injected with mock."""
 
 
-@given(name=parsers.parse("I am a user on {url}"))
+@given(name=parsers.parse("I am a user on site {url}"))
 def access_given_site_url(web_page: Page, url: str):
-    """I am a user on <url>."""
+    """I am a user on site {url}."""
     web_page.goto(url)
     assert web_page.title() == "Webcam + MediaPipe Image Classification"
 
 
-@given("I grant permission for the site to access my webcam")
-def grant_webcam_permissions(web_page: Page):
-    """I grant permission for the site to access my webcam."""
+@given("I am able to request an image for prediction")
+def request_model_prediction(web_page: Page):
+    """I am able to request an image for prediction."""
     response = web_page.locator("#response")
+    # 10 seconds (default: 5 sec) timeout due to model load timings
+    expect(response).to_contain_text("Model loaded. Ready!", timeout=10000)
 
     web_page.get_by_role(role="button", name="Capture & Predict").click()
 
 
-@then("I should be able to view the stream on the page")
-def view_video_stream(web_page: Page):
-    """I should be able to view the stream on the page."""
+@then("I should be able to see the prediction result")
+def view_model_prediction_results(web_page: Page):
+    """I should be able to see the prediction result."""
     response = web_page.locator("#response")
 
     expect(response).not_to_contain_text("Webcam access denied or not available.")
