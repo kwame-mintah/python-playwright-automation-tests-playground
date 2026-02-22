@@ -1,141 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Webcam + MediaPipe Image Classification</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Webcam + MediaPipe Image Classification</title>
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-.container {
-  text-align: center;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: 400px;
-}
+    .container {
+      text-align: center;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 400px;
+    }
 
-video {
-  width: 100%;
-  border-radius: 8px;
-  background: black;
-}
+    video {
+      width: 100%;
+      border-radius: 8px;
+      background: black;
+    }
 
-button {
-  margin-top: 15px;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background-color: #007bff;
-  color: white;
-}
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+    }
 
-button:hover {
-  background-color: #0056b3;
-}
+    button:hover {
+      background-color: #0056b3;
+    }
 
-#response {
-  margin-top: 15px;
-  padding: 10px;
-  background: #f1f1f1;
-  border-radius: 5px;
-  min-height: 40px;
-  text-align: left;
-  white-space: pre-wrap;
-}
+    #response {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f1f1f1;
+      border-radius: 5px;
+      min-height: 40px;
+      text-align: left;
+      white-space: pre-wrap;
+    }
 
-canvas {
-  display: none;
-}
-</style>
+    canvas {
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
-  <video id="webcam" autoplay playsinline></video>
-  <canvas id="snapshot"></canvas>
-  <button id="apiButton">Capture & Predict</button>
-  <div id="response"></div>
-</div>
+  <div class="container">
+    <video id="webcam" autoplay playsinline></video>
+    <canvas id="snapshot"></canvas>
+    <button id="apiButton">Capture & Predict</button>
+    <div id="response"></div>
+  </div>
 
-<!-- TensorFlow.js -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
-<!-- Pretrained MobileNet Model -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+  <!-- TensorFlow.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0"></script>
+  <!-- Pretrained MobileNet Model -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1"></script>
 
-<script>
-const video = document.getElementById("webcam");
-const canvas = document.getElementById("snapshot");
-const button = document.getElementById("apiButton");
-const responseDiv = document.getElementById("response");
+  <script>
+    const video = document.getElementById("webcam");
+    const canvas = document.getElementById("snapshot");
+    const button = document.getElementById("apiButton");
+    const responseDiv = document.getElementById("response");
 
-let model;
+    let model;
 
-// Start webcam
-async function startWebcam() {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.srcObject = stream;
-  } catch (error) {
-    responseDiv.textContent = "Webcam access denied or not available.";
-    console.error(error);
-  }
-}
+    // Start webcam
+    async function startWebcam() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+      } catch (error) {
+        responseDiv.textContent = "Webcam access denied or not available.";
+        console.error(error);
+      }
+    }
 
-// Load ML model
-async function loadModel() {
-  responseDiv.textContent = "Loading AI model...";
-  button.disabled = true;
-  button.textContent = "Loading model...";
+    // Load ML model
+    async function loadModel() {
+      responseDiv.textContent = "Loading AI model...";
+      button.disabled = true;
+      button.textContent = "Loading model...";
 
-  model = await mobilenet.load();
+      model = await mobilenet.load();
 
-  responseDiv.textContent = "Model loaded. Ready!";
-  button.disabled = false;
-  button.textContent = "Capture & Predict";
-}
+      responseDiv.textContent = "Model loaded. Ready!";
+      button.disabled = false;
+      button.textContent = "Capture & Predict";
+    }
 
-// Capture image
-function captureFrame() {
-  const context = canvas.getContext("2d");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  context.drawImage(video, 0, 0);
-  return canvas;
-}
+    // Capture image
+    // No cropping full image is used. e.g. 1280 × 720 resolution.
+    //(0,0) ------------------------------ (1280,0)
+    //  |                                     |
+    //  |                                     |
+    //  |                                     |
+    //  |                                     |
+    //  |                                     |
+    //(0,720) --------------------------- (1280,720)
+    function captureFrame() {
+      const context = canvas.getContext("2d");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0);
+      return canvas;
+    }
 
-// Predict image content
-async function predictImage() {
-  responseDiv.textContent = "Capturing image...";
-  const image = captureFrame();
+    // Predict image content, example response:
+    // [{
+    //   className: "Egyptian cat",
+    //   probability: 0.8380282521247864
+    // }, {
+    //   className: "tabby, tabby cat",
+    //   probability: 0.04644153267145157
+    // }, {
+    //   className: "Siamese cat, Siamese",
+    //   probability: 0.024488523602485657
+    // }]
+    async function predictImage() {
+      responseDiv.textContent = "Capturing image...";
+      const image = captureFrame();
 
-  responseDiv.textContent = "Analyzing image...";
-  const predictions = await model.classify(image);
+      responseDiv.textContent = "Analyzing image...";
+      const predictions = await model.classify(image);
+      responseDiv.textContent =
+        predictions
+          .map(p => `${p.className} (${(p.probability * 100).toFixed(2)}%)`)
+          .join("\n");
+    }
 
-  responseDiv.textContent =
-    predictions
-      .map(p => `${p.className} (${(p.probability * 100).toFixed(2)}%)`)
-      .join("\n");
-}
+    button.addEventListener("click", predictImage);
 
-button.addEventListener("click", predictImage);
-
-startWebcam();
-loadModel();
-</script>
+    startWebcam();
+    loadModel();
+  </script>
 
 </body>
+
 </html>
