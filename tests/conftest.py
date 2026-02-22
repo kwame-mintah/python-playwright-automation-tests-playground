@@ -5,6 +5,8 @@ from datetime import datetime
 import pytest
 from playwright.sync_api import sync_playwright, ViewportSize
 
+from setting import Settings
+
 video_path = pathlib.Path(
     "../data/video/pexels_arijit_dey_dog_video_15271584_3840_2160_60fps.y4m"
 ).resolve()
@@ -15,7 +17,7 @@ def pytest_configure(config: pytest.Config) -> None:
     Create a `/reports/` directory and timestamp reports generated.
     """
     # Create reports directory
-    os.makedirs("reports", exist_ok=True)
+    os.makedirs("../reports", exist_ok=True)
 
     # Generate timestamp
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -35,9 +37,10 @@ def launch_web_browser():
     """
     Launch the web browser ready for testing.
     """
+    assert video_path.exists()
     with sync_playwright() as p:
         browser = p.chromium.launch(
-            headless=False,
+            headless=Settings().PLAYWRIGHT_HEADLESS_MODE,
             slow_mo=1000,
             args=[
                 "--use-fake-device-for-media-stream",
@@ -51,7 +54,10 @@ def launch_web_browser():
 
 @pytest.fixture(scope="function")
 def web_page(launch_web_browser):
-    assert video_path.exists()
+    """
+    Create a new incognito browser context
+    and allow various permissions required.
+    """
     context = launch_web_browser.new_context(
         permissions=["camera", "microphone"],
         record_video_dir="../videos/",
